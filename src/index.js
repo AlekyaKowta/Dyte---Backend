@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const express = require("express");
 const Register = require("./models/Register");
-const fetch = require("node-fetch")
+const fetch = require("node-fetch");
 
 require("./db/mongoose");
 
@@ -13,12 +13,8 @@ app.use(express.json());
 
 app.post("/register", async (req, res) => {
   const UUID = uuidv4();
-  //const register = new Register(req.body) //{targetUrl: , UID: }
   const register = new Register({ targetURL: req.body.targetURL, UID: UUID });
 
-  //res.send(UUID)
-
-  //const ID = Register.find({targetURL:req.body})
   try {
     await register.save();
     res.send(UUID);
@@ -27,11 +23,10 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.put("/update/:id/:newURL", async (req, res) => {
-  //res.send(req.params)
+// Update with the MongoDB ID
 
+app.put("/update/:id/:newURL", async (req, res) => {
   try {
-    //   const update =  await User.findByIdAndUpdate(req.params.id, req.body, {new : true, runValidators:true} )
     const update = await Register.findByIdAndUpdate(
       req.params.id,
       { targetURL: req.params.newURL },
@@ -46,6 +41,8 @@ app.put("/update/:id/:newURL", async (req, res) => {
     res.status(400).send(e);
   }
 });
+
+//Update with the unique ID returned
 
 app.put("/updatewUID/:id/:newURL", async (req, res) => {
   try {
@@ -68,13 +65,12 @@ app.get("/list", async (req, res) => {
     const urls = await Register.find({});
     res.send(urls);
     console.log(urls);
-    //var targetURLS = urls.map(({ targetURL }) => targetURL)
-    //console.log(targetURLS)
   } catch (e) {
     res.status(500).send();
   }
 });
 
+//Delete with the MongoDB ID
 app.delete("/delete/:id", async (req, res) => {
   try {
     const url = await Register.findByIdAndDelete(req.params.id);
@@ -88,6 +84,7 @@ app.delete("/delete/:id", async (req, res) => {
   }
 });
 
+//Delete with the Unique ID returned
 app.delete("/deletewUID/:id", async (req, res) => {
   try {
     const url = await Register.findOneAndDelete({ UID: req.params.id });
@@ -101,108 +98,48 @@ app.delete("/deletewUID/:id", async (req, res) => {
   }
 });
 
-// app.get("/trigger/:ipAddress", async (req, res) => {
-//   try {
-//     const urls = await Register.find({});
-//     //console.log(urls)
-//     var targetURLS = urls.map(({ targetURL }) => targetURL);
-//     console.log(targetURLS);
-//     res.send(targetURLS);
-
-//     let array = new Array();
-//     const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
-//     function get(targetURLS) {
-//       return new Promise((resolve, reject) => {
-//         fetch(targetURLS, {
-//           method: "post",
-//           body: JSON.stringify(body),
-//           headers: { "Content-Type": "application/json" },
-//         })
-//           //.then((res) => res.json())
-//           .then((res) => {
-//             return res.text();
-//           })
-
-//           .catch((err) => {
-//             reject(err);
-//           });
-//       });
-//     }
-
-//     async function result() {
-//       for (let i = 0; i < targetURLS.length; i++) {
-//         const value = await get(targetURLS[i]);
-//         array.push(value);
-//       }
-//       console.log(array.length);
-//     }
-
-//     result();
-
-//     // const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
-
-//     // for (var i = 0; i < targetURLS.length; i++) {
-//     //   //httpPost(targetURL[i], 0, req)
-//     //   fetch(targetURLS[i], {
-//     //     method: "post",
-//     //     body: JSON.stringify(body),
-//     //     headers: { "Content-Type": "application/json" },
-//     //   })
-//     //     .then((response) => response.json())
-//     //     .then((response) => console.log(response))
-
-//     //     .catch((e) => console.log);
-//     // }
-
-//     //res.send("Done")
-//   } catch (e) {
-//     res.status(400).send(e);
-//   }
-// });
-
 app.get("/trigger/:ipAddress", async (req, res) => {
-    try {
-      const urls = await Register.find({});
-      //console.log(urls)
-      var targetURLS = urls.map(({ targetURL }) => targetURL);
-      console.log(targetURLS);
-      //res.send(targetURLS);
+  try {
+    const urls = await Register.find({});
+    //console.log(urls)
+    var targetURLS = urls.map(({ targetURL }) => targetURL);
+    console.log(targetURLS);
+    //res.send(targetURLS);
 
-      async function getPosts(count){
-        if (count <= 5){
+    async function getPosts(count) {
+      if (count <= 5) {
         let array = [];
         const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
-        for (let i = 0; i < targetURLS.length; i++)   {
-          console.log('fetching',targetURLS[i]);
+        for (let i = 0; i < targetURLS.length; i++) {
+          console.log("fetching", targetURLS[i]);
           try {
             let p1 = await fetch(targetURLS[i], {
-                        method: "post",
-                        body: JSON.stringify(body),
-                        headers: { "Content-Type": "application/json" },
-                      });
+              method: "post",
+              body: JSON.stringify(body),
+              headers: { "Content-Type": "application/json" },
+            });
             let p2 = await p1.text();
-            
+
             array.push(p2);
-            console.log('adding',p2);
-          }
-          catch (e) {
-              getPosts(count+1)
+            console.log("adding", p2);
+          } catch (e) {
+            getPosts(count + 1);
             console.error(e.message);
           }
-        }  
-        console.log ('length',array.length);
-        };
-        
-      };
-      
-      getPosts(0).then(()=>{console.log('done')});
+        }
+        console.log("length", array.length);
+      }
+    }
 
-      res.send("Done")
-    }
-    catch (e) {
-      res.status(400).send(e);
-    }
-  });
+    getPosts(0).then(() => {
+      console.log("done");
+    });
+
+    res.send("Done");
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
 app.post("/trigger/", async (req, res) => {
   res.send(req.body.IPAddress);
@@ -211,20 +148,3 @@ app.post("/trigger/", async (req, res) => {
 app.listen(port, () => {
   console.log("Server listening to port " + port);
 });
-
-//Max 5 retries
-// function httpPost(targetURL, count, req){
-//     const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
-//     if (count<=5){
-//         fetch(targetURL, {
-//             method: "post",
-//             body: JSON.stringify(body),
-//             headers: {"Content-Type": "application/json"},
-//         })
-//         .then(data => console.log("Success ", data))
-//         .catch((e)=>{
-//             console.log(e)
-//                 httpPost(targetURL, count+1)
-//         })
-//     }
-//  }
