@@ -22,7 +22,7 @@ Microservices or Microservice Architecture is a method where small, self-contain
    git clone https://github.com/AlekyaKowta/Dyte---Backend.git
    npm install
    cd src 
-   node index.js
+   node index.js or npm run start
    ```
 
 3. Start webhooks.js
