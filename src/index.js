@@ -101,64 +101,102 @@ app.delete("/deletewUID/:id", async (req, res) => {
   }
 });
 
+// app.get("/trigger/:ipAddress", async (req, res) => {
+//   try {
+//     const urls = await Register.find({});
+//     //console.log(urls)
+//     var targetURLS = urls.map(({ targetURL }) => targetURL);
+//     console.log(targetURLS);
+//     res.send(targetURLS);
+
+//     let array = new Array();
+//     const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
+//     function get(targetURLS) {
+//       return new Promise((resolve, reject) => {
+//         fetch(targetURLS, {
+//           method: "post",
+//           body: JSON.stringify(body),
+//           headers: { "Content-Type": "application/json" },
+//         })
+//           //.then((res) => res.json())
+//           .then((res) => {
+//             return res.text();
+//           })
+
+//           .catch((err) => {
+//             reject(err);
+//           });
+//       });
+//     }
+
+//     async function result() {
+//       for (let i = 0; i < targetURLS.length; i++) {
+//         const value = await get(targetURLS[i]);
+//         array.push(value);
+//       }
+//       console.log(array.length);
+//     }
+
+//     result();
+
+//     // const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
+
+//     // for (var i = 0; i < targetURLS.length; i++) {
+//     //   //httpPost(targetURL[i], 0, req)
+//     //   fetch(targetURLS[i], {
+//     //     method: "post",
+//     //     body: JSON.stringify(body),
+//     //     headers: { "Content-Type": "application/json" },
+//     //   })
+//     //     .then((response) => response.json())
+//     //     .then((response) => console.log(response))
+
+//     //     .catch((e) => console.log);
+//     // }
+
+//     //res.send("Done")
+//   } catch (e) {
+//     res.status(400).send(e);
+//   }
+// });
+
 app.get("/trigger/:ipAddress", async (req, res) => {
-  try {
-    const urls = await Register.find({});
-    //console.log(urls)
-    var targetURLS = urls.map(({ targetURL }) => targetURL);
-    console.log(targetURLS);
-    res.send(targetURLS);
+    try {
+      const urls = await Register.find({});
+      //console.log(urls)
+      var targetURLS = urls.map(({ targetURL }) => targetURL);
+      console.log(targetURLS);
+      res.send(targetURLS);
 
-    let array = new Array();
-    const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
-    function get(targetURLS) {
-      return new Promise((resolve, reject) => {
-        fetch(targetURLS, {
-          method: "post",
-          body: JSON.stringify(body),
-          headers: { "Content-Type": "application/json" },
-        })
-          //.then((res) => res.json())
-          .then((res) => {
-            return res.text();
-          })
-
-          .catch((err) => {
-            reject(err);
-          });
-      });
+      async function getPosts(){
+        let array = [];
+        const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
+        for (let i = 0; i < targetURLS.length; i++)   {
+          console.log('fetching',targetURLS[i]);
+          try {
+            let p1 = await fetch(targetURLS[i], {
+                        method: "post",
+                        body: JSON.stringify(body),
+                        headers: { "Content-Type": "application/json" },
+                      });
+            let p2 = await p1.text();
+            
+            array.push(p2);
+            console.log('adding',p2);
+          }
+          catch (e) {
+            console.error(e.message);
+          }
+        };
+        console.log ('length',array.length);
+      };
+      
+      getPosts().then(()=>{console.log('done')});
     }
-
-    async function result() {
-      for (let i = 0; i < targetURLS.length; i++) {
-        const value = await get(targetURLS[i]);
-        array.push(value);
-      }
-      console.log(array.length);
+    catch (e) {
+      res.status(400).send(e);
     }
-
-    result();
-
-    // const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
-
-    // for (var i = 0; i < targetURLS.length; i++) {
-    //   //httpPost(targetURL[i], 0, req)
-    //   fetch(targetURLS[i], {
-    //     method: "post",
-    //     body: JSON.stringify(body),
-    //     headers: { "Content-Type": "application/json" },
-    //   })
-    //     .then((response) => response.json())
-    //     .then((response) => console.log(response))
-
-    //     .catch((e) => console.log);
-    // }
-
-    //res.send("Done")
-  } catch (e) {
-    res.status(400).send(e);
-  }
-});
+  });
 
 app.post("/trigger/", async (req, res) => {
   res.send(req.body.IPAddress);
