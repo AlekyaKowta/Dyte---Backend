@@ -62,35 +62,35 @@ The ServiceBroker is called - this handles the action calls and forwards the eve
 
 #### Register
 
-![image-20210717153322620](assets\image-20210717153322620.png)
+![image-20210717153322620](/assets\image-20210717153322620.png)
 
 The Unique ID of URL is returned
 
-![image-20210717153421114](assets\image-20210717153421114.png)
+![image-20210717153421114](/assets\image-20210717153421114.png)
 
 #### Update
 
-![image-20210717153936401](assets\image-20210717153936401.png)
+![image-20210717153936401](/assets\image-20210717153936401.png)
 
 The update status is returned
 
-![image-20210717154003860](assets\image-20210717154003860.png)
+![image-20210717154003860](/assets\image-20210717154003860.png)
 
 #### List
 
-![image-20210717154116609](assets\image-20210717154116609.png)
+![image-20210717154116609](/assets\image-20210717154116609.png)
 
-![image-20210717154152653](assets\image-20210717154152653.png)
+![image-20210717154152653](/assets\image-20210717154152653.png)
 
 #### Delete
 
 The delete status is returned
 
-![image-20210717154311709](assets\image-20210717154311709.png)
+![image-20210717154311709](/assets\image-20210717154311709.png)
 
 #### Trigger
 
 The trigger status is returned
 
-![image-20210717154405876](assets\image-20210717154405876.png)
+![image-20210717154405876](/assets\image-20210717154405876.png)
 
