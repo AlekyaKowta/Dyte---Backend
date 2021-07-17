@@ -73,8 +73,17 @@ broker.createService({
             
         },
 
-        trigger(ctx) {
-            return Number(ctx.params.a) + Number(ctx.params.b);
+        async trigger(ctx) {
+            obj = {IPAddress: ctx.params.IPAddress}
+          response = await fetch("localhost:3000/trigger/" +ctx.params.ip, {
+                method:"post",
+                body: JSON.stringify(obj),
+                headers: { "Content-Type": "application/json" },
+
+            })
+
+            return response.text()
+
         },
 
         async delete(ctx){
@@ -111,7 +120,7 @@ broker.start()
     // // Print the response
     // .then(res => console.log("5 + 3 =", res))
     // .catch(err => console.error(`Error occured! ${err.message}`));
-    .then(() => broker.call("webhooks.register", {targetURL:"https://github.com"}))
+    .then(() => broker.call("webhooks.register", {targetURL:"http://localhost:3000/trigger"}))
     .then(res => console.log("Unique ID of targetURL", res))
     .catch(err => console.error(`Error occured! ${err.message}`));
 
@@ -127,6 +136,11 @@ broker.start()
     .catch(err => console.error(`Error occured! ${err.message}`));
 
 broker.start()
-    .then(()=>broker.call("webhooks.delete", {id: "60f14e8228cc1e2548e05654"}))
+    .then(()=>broker.call("webhooks.delete", {id: "60f177e573d5d51ee4b5fc90"}))
     .then(res => console.log("Status Delete", res))
+    .catch(err => console.error(`Error occured! ${err.message}`));
+
+broker.start()
+    .then(()=>broker.call("webhooks.trigger", {ip: "123.123.123.123"}))
+    .then(res => console.log("Status Trigger", res))
     .catch(err => console.error(`Error occured! ${err.message}`));
