@@ -75,12 +75,7 @@ broker.createService({
 
         async trigger(ctx) {
             obj = {IPAddress: ctx.params.IPAddress}
-          response = await fetch("localhost:3000/trigger/" +ctx.params.ip, {
-                method:"post",
-                body: JSON.stringify(obj),
-                headers: { "Content-Type": "application/json" },
-
-            })
+          response = await fetch("http://localhost:3000/trigger/" +ctx.params.ip)
 
             return response.text()
 

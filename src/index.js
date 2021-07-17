@@ -166,9 +166,10 @@ app.get("/trigger/:ipAddress", async (req, res) => {
       //console.log(urls)
       var targetURLS = urls.map(({ targetURL }) => targetURL);
       console.log(targetURLS);
-      res.send(targetURLS);
+      //res.send(targetURLS);
 
-      async function getPosts(){
+      async function getPosts(count){
+        if (count <= 5){
         let array = [];
         const body = { IPAddress: req.params.ipAddress, timestamp: Date.now() };
         for (let i = 0; i < targetURLS.length; i++)   {
@@ -185,13 +186,18 @@ app.get("/trigger/:ipAddress", async (req, res) => {
             console.log('adding',p2);
           }
           catch (e) {
+              getPosts(count+1)
             console.error(e.message);
           }
-        };
+        }  
         console.log ('length',array.length);
+        };
+        
       };
       
-      getPosts().then(()=>{console.log('done')});
+      getPosts(0).then(()=>{console.log('done')});
+
+      res.send("Done")
     }
     catch (e) {
       res.status(400).send(e);
